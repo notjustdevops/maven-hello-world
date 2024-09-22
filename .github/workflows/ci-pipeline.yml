@@ -30,10 +30,12 @@ jobs:
           sed -i 's/Hello World, this is [^"]*/Hello World, this is Dvorkin Guy on behalf of "Not Just DevOps Species" from Kepler-186f!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
 
       - name: Set JAR version to 1.0.0
+        working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
           mvn versions:set -DnewVersion=1.0.0
 
       - name: Increment patch version
+        working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           patch_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
@@ -41,9 +43,11 @@ jobs:
           echo "New version: $patch_version"
 
       - name: Compile the code
+        working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn compile
 
       - name: Package the code
+        working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn package -DskipTests
 
       - name: Upload artifact
