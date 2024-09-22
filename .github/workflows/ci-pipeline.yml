@@ -28,8 +28,14 @@ jobs:
       - name: Update Hello World message
         run: |
             sed -i 's/Hello World, ...Auto Replaced in CI Job/Hello World, this is Dvorkin Guy on behalf of Not Just DevOps Species from Kepler-186f!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-        
                  
+      - name: Verify App.java after replacement
+        run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+          
+      - name: Package the code
+        working-directory: Dvorkin-Guy-From-Kepler-186f-App
+        run: mvn package -DskipTests
+           
       - name: Output App.java content
         run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
         
@@ -69,13 +75,31 @@ jobs:
       - name: Build and push Docker image
         run: |
           patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
-          docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} Dvorkin-Guy-From-Kepler-186f-App
+          docker build --no-cache -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} Dvorkin-Guy-From-Kepler-186f-App
           
-          # Tag the image with the patch version and as latest
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
           
-          # Push both images to Docker Hub
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
+      
+      - name: Delete old Docker images (keep last 10)
+        run: |
+          token=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+          
+          # Fetch all tags and sort them by update date
+          images=$(curl -s -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/?page_size=100" | jq -r '.results|sort_by(.last_updated)|.[]|.name')
+          
+          image_count=$(echo "$images" | wc -l)
+          images_to_delete=$(($image_count - 10))
+          
+          if [ $images_to_delete -gt 0 ]; then
+            echo "$images" | head -n $images_to_delete | while read tag; do
+              echo "Deleting old image tag: $tag"
+              curl -s -X DELETE -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/$tag/"
+            done
+          else
+            echo "No images to delete, keeping the last 10."
+          fi
+
