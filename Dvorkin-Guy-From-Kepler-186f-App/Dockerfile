@@ -14,4 +14,5 @@ COPY target/dvorkin-guy-from-kepler-186f-app.jar app.jar
 USER nobody
 
 # Run the JAR
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar app.jar && sleep 600"]
+

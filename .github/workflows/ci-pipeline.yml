@@ -27,7 +27,8 @@ jobs:
 
       - name: Update Hello World message
         run: |
-          sed -i 's/Hello World, this is [^"]*/Hello World, this is Dvorkin Guy on behalf of "Not Just DevOps Species" from Kepler-186f!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+            sed -i 's/Hello World. (#Should be utomatically adjusted via GitHub Actions.)/Hello World, this is Dvorkin Guy on behalf of "Not Just DevOps Species" from Kepler-186f!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+        
 
       - name: Set JAR version to 1.0.0
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
@@ -38,12 +39,15 @@ jobs:
         id: patch_version
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
-          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          patch_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
-          mvn versions:set -DnewVersion=$patch_version
-          echo "::set-output name=PATCH_VERSION::$patch_version"
-          echo "New version: $patch_version"
-
+            current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            patch_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
+            mvn versions:set -DnewVersion=$patch_version
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            git add pom.xml
+            git commit -m "Increment version to $patch_version"
+            echo "::set-output name=PATCH_VERSION::$patch_version"
+        
       - name: Compile the code
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn compile
