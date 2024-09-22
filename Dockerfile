@@ -1,4 +1,4 @@
-# path: Dockerfile
+# path: /home/notjust/Documents/devops/Projects/Rafael/maven-hello-world/Dockerfile
 
 # Use OpenJDK image
 FROM openjdk:11-jre-slim
@@ -7,6 +7,7 @@ FROM openjdk:11-jre-slim
 WORKDIR /app
 
 # Copy the built JAR file into the container
+# Ensure the correct JAR file path is used; adjust based on the actual output from the build
 COPY Dvorkin-Guy-From-Kepler-186f-App/target/dvorkin-guy-from-kepler-186f-app-*.jar app.jar
 
 # Ensure the container runs as a non-root user
