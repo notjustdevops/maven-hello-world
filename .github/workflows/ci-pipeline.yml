@@ -56,9 +56,8 @@ jobs:
           name: dvorkin-guy-app-jar
           path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
 
-      # Run docker build from the root directory where Dockerfile is located
+      # Run docker build from the repository root where Dockerfile is located
       - name: Build Docker image
-        working-directory: /home/notjust/Documents/devops/Projects/Rafael/maven-hello-world
         run: |
           docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} .
 
