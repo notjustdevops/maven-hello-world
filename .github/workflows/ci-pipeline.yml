@@ -20,7 +20,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Java build
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -28,7 +27,7 @@ jobs:
 
       - name: Update Hello World message
         run: |
-          sed -i 's/Hello World, this is [^"]*/Hello World, this is Dvorkin Guy on behalf of "Not Just DevOps Species" from Kepler-186f!/' src/main/java/com/myapp/App.java
+          sed -i 's/Hello World, this is [^"]*/Hello World, this is Dvorkin Guy on behalf of "Not Just DevOps Species" from Kepler-186f!/' /home/notjust/Documents/devops/Projects/Rafael/maven-hello-world/Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
 
       - name: Set JAR version to 1.0.0
         run: |
@@ -51,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dvorkin-guy-app-jar
-          path: target/*.jar
+          path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
 
       - name: Build Docker image
         run: |
