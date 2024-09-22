@@ -50,13 +50,13 @@ jobs:
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn package -DskipTests
 
-      # Verify if the JAR file exists
       - name: List target directory after build
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: ls -R target
 
-      # Docker build should run from the repository root
+      # Build Docker image (updated Dockerfile location inside the app folder)
       - name: Build Docker image
+        working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
           docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} .
 
