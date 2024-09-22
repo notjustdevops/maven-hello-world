@@ -35,11 +35,13 @@ jobs:
           mvn versions:set -DnewVersion=1.0.0
 
       - name: Increment patch version
+        id: patch_version
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           patch_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
           mvn versions:set -DnewVersion=$patch_version
+          echo "::set-output name=PATCH_VERSION::$patch_version"
           echo "New version: $patch_version"
 
       - name: Compile the code
@@ -59,13 +61,17 @@ jobs:
       - name: List target directory after build
         run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
 
+      # Build and tag Docker images
       - name: Build and push Docker image
         run: |
+          patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
           docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} Dvorkin-Guy-From-Kepler-186f-App
-
+          
+          # Tag the image with the patch version and as latest
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
-
+          
+          # Push both images to Docker Hub
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
