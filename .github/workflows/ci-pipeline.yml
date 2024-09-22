@@ -60,8 +60,9 @@ jobs:
         run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
         
 
-      # Run docker build from the repository root where Dockerfile is located
+      # Run docker build from within the Dvorkin-Guy-From-Kepler-186f-App directory
       - name: Build Docker image
+        working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
           docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} .
 
