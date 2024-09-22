@@ -5,11 +5,11 @@ name: Automated Maven Build, Dockerize, and Deployment
 on:
   push:
     branches:
-      - main
+      - master
       - 'feature/*'
   pull_request:
     branches:
-      - main
+      - master
       - 'feature/*'
 
 jobs:
