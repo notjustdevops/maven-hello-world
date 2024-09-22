@@ -28,7 +28,7 @@
     </dependencies>
 
     <build>
-        <finalName>Dvorkin-Guy-From-Kepler-186f-App</finalName>
+        <finalName>dvorkin-guy-from-kepler-186f-app</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
