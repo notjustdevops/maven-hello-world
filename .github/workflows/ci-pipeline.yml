@@ -27,8 +27,7 @@ jobs:
 
       - name: Update Hello World message
         run: |
-            sed -i 's/Hello World, ...Auto Replaced in CI Job/Hello World, this is Dvorkin Guy on behalf of '\''Not Just DevOps Species'\'' from Kepler-186f!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-                
+          sed -i 's/Hello World, ...Auto Replaced in CI Job/Hello World, this is Dvorkin Guy on behalf of '\''Not Just DevOps Species'\'' from Kepler-186f!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
 
       - name: Set JAR version to 1.0.0
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
@@ -39,15 +38,12 @@ jobs:
         id: patch_version
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
-            current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-            patch_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
-            mvn versions:set -DnewVersion=$patch_version
-            git config --global user.name "GitHub Actions"
-            git config --global user.email "actions@github.com"
-            git add pom.xml
-            git commit -m "Increment version to $patch_version"
-            echo "::set-output name=PATCH_VERSION::$patch_version"
-        
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          patch_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
+          mvn versions:set -DnewVersion=$patch_version
+          echo "::set-output name=PATCH_VERSION::$patch_version"
+          echo "New version: $patch_version"
+
       - name: Compile the code
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn compile
@@ -79,19 +75,3 @@ jobs:
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
-
-      - name: Delete old Docker images (keep last 10)
-        run: |
-          token=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
-          images=$(curl -s -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/?page_size=100" | jq -r '.results|sort_by(.last_updated)|.[]|.name')
-          image_count=$(echo "$images" | wc -l)
-          images_to_delete=$(($image_count - 10))
-          
-          if [ $images_to_delete -gt 0 ]; then
-            echo "$images" | head -n $images_to_delete | while read tag; do
-              echo "Deleting old image tag: $tag"
-              curl -s -X DELETE -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/$tag/"
-            done
-          else
-            echo "No images to delete, keeping the last 10."
-          fi
