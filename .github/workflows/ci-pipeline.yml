@@ -50,20 +50,27 @@ jobs:
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn package -DskipTests
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dvorkin-guy-app-jar
+          path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
+        
       - name: List target directory after build
-        working-directory: Dvorkin-Guy-From-Kepler-186f-App
-        run: ls -R target
+        run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
 
-      # Build Docker image (updated Dockerfile location inside the app folder)
-      - name: Build Docker image
-        working-directory: Dvorkin-Guy-From-Kepler-186f-App
+      - name: Build and push Docker image
         run: |
-          docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} .
-
-      - name: Push Docker image to Docker Hub
-        run: |
+          docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} Dvorkin-Guy-From-Kepler-186f-App
+          
+          # Tag the image with the patch version and as latest
+          docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
+          docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
+          
+          # Push both images to Docker Hub
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }}
+          docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
+          docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
 
       - name: Run the Docker container
         run: docker run -d -p 8080:8080 --name dvorkin-guy-app --user nobody dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }}
