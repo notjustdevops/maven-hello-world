@@ -55,6 +55,10 @@ jobs:
         with:
           name: dvorkin-guy-app-jar
           path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
+        
+      - name: List target directory after build
+        run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
+        
 
       # Run docker build from the repository root where Dockerfile is located
       - name: Build Docker image
