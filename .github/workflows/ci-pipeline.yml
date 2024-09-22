@@ -50,19 +50,13 @@ jobs:
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn package -DskipTests
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dvorkin-guy-app-jar
-          path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
-        
+      # Verify if the JAR file exists
       - name: List target directory after build
-        run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
-        
-
-      # Run docker build from within the Dvorkin-Guy-From-Kepler-186f-App directory
-      - name: Build Docker image
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
+        run: ls -R target
+
+      # Docker build should run from the repository root
+      - name: Build Docker image
         run: |
           docker build -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} .
 
