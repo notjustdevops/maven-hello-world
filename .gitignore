@@ -15,8 +15,29 @@
 /.settings
 bin/**
 
+# IntelliJ IDEA #
+.idea/
+*.iml
+out/
+
+# macOS #
+.DS_Store
+
+# Linux #
+.swp
+
+# Log files #
+*.log
+
+# Temporary files #
+*.bak
+*.tmp
+*.swp
+
 # Maven #
+**/target/
 target/
+
 /.mvn
 /.maven
 /.repository
