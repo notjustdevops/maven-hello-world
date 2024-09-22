@@ -8,5 +8,4 @@ COPY target/dvorkin-guy-from-kepler-186f-app.jar app.jar
 
 USER nobody
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
-CMD ["sleep", "600"]
+ENTRYPOINT ["sh", "-c", "java -jar app.jar && sleep 600"]
