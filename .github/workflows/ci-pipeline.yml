@@ -28,7 +28,11 @@ jobs:
       - name: Update Hello World message
         run: |
           sed -i 's/Hello World, ...Auto Replaced in CI Job/Hello World, this is Dvorkin Guy on behalf of '\''Not Just DevOps Species'\'' from Kepler-186f!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-
+                 
+      - name: Output App.java content
+        run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+        
+          
       - name: Set JAR version to 1.0.0
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
@@ -61,7 +65,6 @@ jobs:
       - name: List target directory after build
         run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
 
-      # Build and tag Docker images
       - name: Build and push Docker image
         run: |
           patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
