@@ -51,10 +51,12 @@ jobs:
           echo "New version: $new_version"
 
       # Step 4: Update Hello World message with new version
+      # Step 4: Update Hello World message with new version
       - name: Update Hello World message
         run: |
           patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
-          sed -i "s/Hello World, this is Dvorkin Guy v[0-9\.]*\!/Hello World, this is Dvorkin Guy v$patch_version\!/" Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+          sed -i "s/Hello World, this is Dvorkin Guy v[0-9\.]*\!/Hello World, this is Dvorkin Guy on behalf of Not Just DevOps Species from Kepler-186f v$patch_version\!/" Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+
 
       # Step 5: Verify App.java after replacement
       - name: Verify App.java after replacement
