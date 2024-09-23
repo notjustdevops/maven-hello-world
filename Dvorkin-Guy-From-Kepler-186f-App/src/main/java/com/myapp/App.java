@@ -15,7 +15,7 @@ public class App {
         get("/info", (req, res) -> {
             res.type("application/json");
             // Create an info object with version and author data
-            Info info = new Info("0.0.09", "Dvorkin Guy", "Dvorkin-Guy-From-Kepler-186f-App");
+            Info info = new Info("0.0.10", "Dvorkin Guy", "Dvorkin-Guy-From-Kepler-186f-App");
             // Convert the object to JSON
             return new Gson().toJson(info);
         });
