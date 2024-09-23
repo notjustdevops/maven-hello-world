@@ -18,6 +18,6 @@ public class App {
 
     // Method that returns the greeting message
     public static String getGreeting() {
-        return "Hello World, ...Auto Replaced in CI Job";
+        return "Hello World, ...Auto Replaced in CI Job v1.0.2";
     }
 }

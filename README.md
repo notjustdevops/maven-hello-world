@@ -200,13 +200,15 @@ To construct the program, we'll utilize your "GitHub Actions" continuous integra
 
     * **Security Consideration:** Ensure the Docker image doesn't execute code as the "root" user.
 
-        --> Completed.
+       --> Completed.
 
 
 **Step 3: Deployment and Verification**
 
 1.  **Docker Image Execution:**
     Download and execute the newly created Docker image to confirm successful deployment.
+
+        --> Completed.
 
 2.  **Helm Chart Development:** (Optional)
     For an advanced challenge, create a Helm chart to simplify application deployment and management within Kubernetes environments.
@@ -215,9 +217,19 @@ To construct the program, we'll utilize your "GitHub Actions" continuous integra
 
 For an additional challenge, optimize your Docker image size by implementing a multi-stage build process. Explore resources on "Multi-stage Docker builds" using your trusty "Google" device.
 
+        --> Completed.
+
 **Remember:** Throughout this operation, if you encounter difficulties, leverage the vast knowledge repository known as "Google" for assistance.
 
 **Upon successful program execution, a beacon will be activated, and a rescue mission will be dispatched. Prepare for an imminent departure from your curious planet, Terran!**
+
+
+# Additional Implemethation.
+
+  - Added Tests
+  - Added 2 Images Upload. Latest and $Patch_Version
+  - Keeping last 5 Images Only in DockerHub
+
 
 
 
