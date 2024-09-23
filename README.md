@@ -210,83 +210,377 @@ To construct the program, we'll utilize your "GitHub Actions" continuous integra
 
         --> Completed.
 
-2.  **Helm Chart Development:** (Optional)
-    For an advanced challenge, create a Helm chart to simplify application deployment and management within Kubernetes environments.
 
 **Bonus Objective: Multi-Stage Docker**
 
 For an additional challenge, optimize your Docker image size by implementing a multi-stage build process. Explore resources on "Multi-stage Docker builds" using your trusty "Google" device.
 
-        --> Completed.
+        --> Completed
 
-**Remember:** Throughout this operation, if you encounter difficulties, leverage the vast knowledge repository known as "Google" for assistance.
-
-**Upon successful program execution, a beacon will be activated, and a rescue mission will be dispatched. Prepare for an imminent departure from your curious planet, Terran!**
-
-
-# Additional Implemethation.
+# Additional Implemethations.
 
   - Added Tests
   - Added 2 Images Upload. Latest and $Patch_Version
   - Keeping last 5 Images Only in DockerHub
-
-
-
+  - All variables set Dynamically
+  - Optimized the Docker image using multistage builds to minimize the final image size.
 
 
 
 ---
 
-## Step 6: Deploy with Helm
 
-1. **Create a basic Helm chart**:
-   ```bash
-   helm create maven-hello-world
-   ```
-2. **Modify the Helm chart** to include:
-   - Deployment
-   - Service
-   - Ingress (optional, for exposure)
 
-3. **Deploy the app to Kubernetes**:
-   ```bash
-   helm install hello-world ./maven-hello-world
-   ```
+2.  **Helm Chart Development:**
+    For an advanced challenge, create a Helm chart to simplify application deployment and management within Kubernetes environments.
 
----
 
-## Step 7: Run Docker Image Locally
+### Comprehensive Structure Plan for Exposing App via `kepler.notjustdevops.com` Using Terragrunt and Implementing CI/CD
 
-Test the Docker image locally by running:
-```bash
-docker run -d -p 8080:8080 your_dockerhub_username/maven-hello-world:1.0.0
+#### 1. **Infrastructure Design (AWS + DNS)**
+   - **Domain Setup**: Ensure that `notjustdevops.com` is managed in Route 53 and that you have control over DNS for subdomains (like `kepler.notjustdevops.com`).
+   - **Hosted Zone Creation**:
+     - Manually create or ensure a Route 53 hosted zone for `kepler.notjustdevops.com`.
+     - Create DNS records for `argocd.kepler.notjustdevops.com` and `grafana.kepler.notjustdevops.com`.
+   - **SSL Certificates**: Use ACM (AWS Certificate Manager) for obtaining SSL certificates for:
+     - `kepler.notjustdevops.com`
+     - `argocd.kepler.notjustdevops.com`
+     - `grafana.kepler.notjustdevops.com`
+   - **Ingress**:
+     - Setup NGINX ingress with Let’s Encrypt or ACM to manage certificates.
+
+#### 2. **Kubernetes Environment Setup**
+   - **Cluster**: Ensure your EKS (Elastic Kubernetes Service) cluster is set up and configured.
+     - If not already done, use Terragrunt for provisioning.
+   - **Namespace**: Create namespaces like `kepler`, `argocd`, and `monitoring` (for Grafana/Prometheus) within your Kubernetes cluster.
+
+#### 3. **Helm Chart Deployment Plan**
+   - **Helm Chart Creation**:
+     - Create a custom Helm chart for the application that includes templates for deployment, service, and ingress.
+     - Add values.yaml configuration for scaling, resources, and environment-specific values.
+   - **Helm Repositories**:
+     - Store the Helm chart in a separate GitHub repo or a Helm Chart repository.
+     - Use Helmfile to manage multiple Helm charts (App, ArgoCD, Grafana, Prometheus) for a consistent configuration.
+
+#### 4. **ArgoCD Integration**
+   - **ArgoCD Configuration**:
+     - Create ArgoCD manifests or Helm chart to deploy the ArgoCD instance.
+     - Expose `argocd.kepler.notjustdevops.com` via ingress.
+     - Create a project and application in ArgoCD for continuous deployment (watching GitHub repository changes).
+   - **Automated Sync**: 
+     - Ensure ArgoCD monitors the Helm repository and syncs the `kepler` app and the services like Grafana automatically.
+
+#### 5. **Grafana and Prometheus Setup**
+   - **Grafana Deployment**:
+     - Use Helm charts to deploy Grafana and Prometheus in the `monitoring` namespace.
+     - Expose Grafana at `grafana.kepler.notjustdevops.com` using ingress.
+   - **Monitoring**:
+     - Configure Prometheus to monitor the cluster and application metrics.
+     - Set up alerts for key events (e.g., Slack notifications for failures or deployments).
+
+#### 6. **Terraform + Terragrunt for Infrastructure Automation**
+   - **Terraform Modules**:
+     - **Route53**: DNS records for ArgoCD and Grafana.
+     - **ACM**: SSL certificate management.
+     - **EKS**: Ensure your cluster configuration is handled via Terraform.
+     - **Ingress**: Terraform module to handle ingress creation for `argocd` and `grafana`.
+   - **Terragrunt Folder Structure**:
+     ```
+     notjust@devops:maven-hello-world us-west-2/(feature/helm) $ tree
+    .
+    ├── Dvorkin-Guy-From-Kepler-186f-App
+     --- APP
+
+
+    ├── helm
+    │   ├── Chart.yaml
+    │   ├── templates
+    │   │   ├── deployment.yaml
+    │   │   ├── _helpers.tpl
+    │   │   ├── ingress.yaml
+    │   │   └── service.yaml
+    │   └── values.yaml
+    ├── readme-ido.md
+    ├── README.md
+    ├── scripts
+    │   └── create_structure.sh
+    ├── terraform
+    │   ├── environments
+    │   │   └── dev
+    │   │       ├── backend.tf
+    │   │       ├── main.tf
+    │   │       ├── outputs.tf
+    │   │       ├── terraform.tfvars
+    │   │       └── variables.tf
+    │   └── modules
+    │       ├── argocd
+    │       │   ├── main.tf
+    │       │   ├── outputs.tf
+    │       │   └── variables.tf
+    │       ├── eks
+    │       │   ├── main.tf
+    │       │   ├── outputs.tf
+    │       │   └── variables.tf
+    │       ├── grafana
+    │       │   ├── main.tf
+    │       │   ├── outputs.tf
+    │       │   └── variables.tf
+    │       ├── iam
+    │       │   ├── main.tf
+    │       │   ├── outputs.tf
+    │       │   └── variables.tf
+    │       ├── ingress
+    │       │   ├── main.tf
+    │       │   ├── outputs.tf
+    │       │   └── variables.tf
+    │       ├── monitoring
+    │       │   ├── main.tf
+    │       │   ├── outputs.tf
+    │       │   └── variables.tf
+    │       ├── secrets
+    │       │   ├── main.tf
+    │       │   ├── outputs.tf
+    │       │   └── variables.tf
+    │       └── vpc
+    │           ├── main.tf
+    │           ├── outputs.tf
+    │           └── variables.tf
+    └── terragrunt
+        ├── dev
+        │   └── terragrunt.hcl
+        └── terragrunt.hcl
+
+   - **Terragrunt Workflow**:
+     - Each module (like `eks`, `argocd`, and `grafana`) should be reused via Terragrunt for consistency.
+     - Store environment-specific configurations in `dev/terraform.tfvars`.
+     - Make all secrets configurable via environment variables, using AWS Secrets Manager where needed.
+
+#### 7. **CI/CD Pipeline Setup**
+   - **CI (GitHub Actions)**:
+     - Define the `.github/workflows/ci-pipeline.yml` for automating the Maven build and Docker image pushing process.
+     - Trigger builds on pushes to `feature/helm` branch.
+   - **CD (GitHub Actions for ArgoCD) Setup**:
+     - Add a `cd-pipeline.yml` in `.github/workflows` for deploying the application via ArgoCD.
+     - Use ArgoCD CLI or API in GitHub Actions to trigger deployments after each successful build.
+     - Ensure image version bumping and tagging is consistent via GitHub Actions.
+   
+#### 8. **Access Control & Security**
+   - **IAM Roles**: Use least privilege access for Terraform and CI/CD pipelines.
+   - **Secrets Management**:
+     - Store sensitive information (e.g., DockerHub credentials, ArgoCD admin password) securely in GitHub Secrets and AWS Secrets Manager.
+     - Ensure SSL certificates for all endpoints are properly managed through ACM or Let’s Encrypt.
+   - **Multi-Environment Setup**: Start with DEV only but plan for future PROD and STAGING environments using the same Terragrunt configuration.
+
+### README.md Plan (Super DevOps Approach)
+```
+# Kepler-186f DevOps Application
+
+## Overview
+This project demonstrates a highly scalable, secure, and automated deployment of the Kepler-186f application using AWS, Kubernetes (EKS), Terragrunt, Helm, and ArgoCD for CI/CD automation.
+
+## Features
+- **Kubernetes EKS Cluster**: Managed using Terraform and Terragrunt.
+- **ArgoCD Integration**: Continuous deployment monitoring GitHub repository for automatic sync.
+- **Grafana & Prometheus**: Monitoring and alerting of the Kubernetes cluster and application.
+- **Automated CI/CD Pipelines**: GitHub Actions for CI and ArgoCD for CD with GitOps.
+- **Helm for Kubernetes**: Simplified application management and deployment.
+- **SSL Encryption**: Secure SSL endpoints managed via AWS ACM for `kepler.notjustdevops.com`.
+
+## Infrastructure Overview
+- **AWS**: DNS management, SSL certificates, and Kubernetes.
+- **Route53**: DNS for `kepler.notjustdevops.com`.
+- **ACM**: SSL certificates for secure communication.
+- **EKS**: Kubernetes cluster for running the application and services.
+- **Terragrunt**: Reusable infrastructure code for DEV, STAGING, and PROD environments.
+  
+## Deployment Workflow
+1. **Infrastructure Setup**: Use Terragrunt to provision all necessary AWS resources (Route53, ACM, EKS).
+2. **Helm Deployment**: Deploy the Kepler-186f app, ArgoCD, and Grafana using Helm charts.
+3. **GitOps Deployment**: ArgoCD monitors changes and auto-syncs with Kubernetes.
+4. **CI/CD**: Automated build and deployment using GitHub Actions.
+
+## Environment Variables
+- `AWS_ACCESS_KEY_ID`: Access key for AWS IAM.
+- `AWS_SECRET_ACCESS_KEY`: Secret key for AWS IAM.
+- `DOCKER_USERNAME`: DockerHub username for pushing images.
+- `DOCKER_PASSWORD`: DockerHub password for authentication.
+
+## Future Improvements
+- **Blue/Green Deployments**: For zero-downtime upgrades.
+- **Multiple Environments**: Add STAGING and PROD environments with the same reusable infrastructure.
 ```
 
-Visit `http://localhost:8080` to see your "Hello World" message.
+### Next Steps
+1. **Branch Creation**: Create the `feature/helm` branch for implementing Helm chart.
+2. **Terraform & Terragrunt**: Set up Terragrunt for the `dev` environment.
+3. **DNS & SSL**: Set up Route 53 and ACM for SSL/TLS.
+4. **CI/CD Pipeline**: Integrate GitHub Actions for automated build and deployment with ArgoCD.
+
+This approach uses the latest DevOps best practices, ensuring a smooth and automated workflow from code commit to deployment on `kepler.notjustdevops.com`.
+
+
 
 ---
 
-## Final Step: Signal Home
-
-Once all steps are complete and the app is deployed successfully, you have completed the mission!
-
-Good luck, fellow Keplerian!
+data "aws_secretsmanager_secret_version" "grafana_admin_password" {
+  secret_id = "grafanaAdminPassword"
+}
+grafana_admin_password = data.aws_secretsmanager_secret_version.grafana_admin_password.secret_string
 
 ---
 
-**Bonus:** Optimize the Docker image using multistage builds to minimize the final image size.
-```
-
-### Review of Answers:
-- **Forking and Analysis**: All steps are correct.
-- **Maven Overview**: Provided explanation about Maven, its workflow, and `pom.xml` is accurate.
-- **Code Changes and Versioning**: Instruction for modifying the `App.java` and setting the version to `1.0.0` in `pom.xml` are correct.
-- **GitHub Actions Workflow**: The provided pipeline configuration should work for automating the build, versioning, and Docker image creation.
+Using the AWS CLI to manually create resources like DynamoDB (for state locking), S3 (for Terraform state), and Route53 DNS can be a good approach if you prefer to manage those critical resources outside of Terraform and Terragrunt. This method can give you more granular control, but it introduces the need for Terraform and Terragrunt to reference pre-existing resources.
 
 
-- **Dockerfile**: Both single-stage and multi-stage Dockerfiles are correctly structured and functional.
-- **Pushing Docker Image**: The steps to push the Docker image to Docker Hub are correct.
-- **Helm Deployment**: The basic Helm chart setup and deployment instructions are correct.
-- **Testing Locally**: Instructions for running the Docker image locally are correct and functional.
 
-This plan should allow you to complete the DevOps exercise quickly and with high quality as a "super DevOps engineer."
+---
+
+Next Steps:
+**Leave the Validation Records:** They are valid and necessary for ACM to confirm the domain ownership. No need to modify them.
+
+**Update Placeholder Records:**
+
+Once you have your infrastructure set up (e.g., load balancers or services for Grafana and ArgoCD), you will need to update the CNAME records from example.com to the actual DNS names of your load balancers or services.
+Example Command to Update a Record (When Services are Ready):
+For example, if your Grafana service is deployed and you have a load balancer DNS name like my-grafana-lb-123456.elb.amazonaws.com, you can update the DNS record like this:
+
+
+aws route53 change-resource-record-sets \
+  --hosted-zone-id Z00790251YCFAM1WK6LNZ \
+  --change-batch '{
+    "Changes": [{
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "grafana.kepler.notjustdevops.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [{
+          "Value": "my-grafana-lb-123456.elb.amazonaws.com"
+        }]
+      }
+    }]
+  }'
+You can do something similar for argocd.kepler.notjustdevops.com when your ArgoCD service is deployed.
+
+--
+
+
+{
+    "ARN": "arn:aws:secretsmanager:us-west-2:864492617736:secret:argocdAdminPassword-0qNt5r",
+    "Name": "argocdAdminPassword",
+    "VersionId": "46953977-a9c0-4796-8a15-2a9f8fb6957c"
+}
+
+
+{
+    "ARN": "arn:aws:secretsmanager:us-west-2:864492617736:secret:dbCredentials-QDLpBx",
+    "Name": "dbCredentials",
+    "VersionId": "39783ae3-0abb-4ef9-abf1-77a411417435"
+}
+
+aws secretsmanager create-secret \
+  --name myAPIKey \
+  --description "API key for external service" \
+  --secret-string "YourAPIKey"
+
+
+aws secretsmanager create-secret \
+  --name apiKeys \
+  --description "API keys for multiple services" \
+  --secret-string '{"service1":"YourAPIKey1", "service2":"YourAPIKey2"}'
+
+
+aws secretsmanager create-secret \
+  --name customSSLCertificate \
+  --description "Custom SSL Certificate" \
+  --secret-string '{"private_key":"YourPrivateKey", "certificate":"YourCertificate", "certificate_chain":"YourCertificateChain"}'
+
+
+---
+
+
+When building a project that involves infrastructure as code (Terraform) and deploying services (such as NGINX Ingress for Kubernetes), the order of operations is important to ensure that everything is set up properly and that dependencies are respected.
+
+### **Best Practices Order for Building a Project**
+
+1. **Infrastructure Setup with Terraform Community Modules**:
+   - **First**, focus on setting up your infrastructure using Terraform modules. This is foundational because the services you deploy later (like NGINX) will rely on this infrastructure.
+   - Use community or custom Terraform modules to create the following resources:
+     - **VPC**: Networking and security setup.
+     - **EKS Cluster**: Kubernetes cluster where your applications will run.
+     - **IAM Roles/Permissions**: Ensure all components have the necessary permissions.
+     - **S3/DynamoDB (for Terraform state)**: Store your Terraform state in an S3 bucket and use DynamoDB for state locking.
+
+   Example order:
+   1. **VPC** (`/terraform/modules/vpc`)
+   2. **IAM** (`/terraform/modules/iam`)
+   3. **EKS** (`/terraform/modules/eks`)
+   4. **Monitoring (if applicable)** (`/terraform/modules/monitoring`)
+
+   Once your Terraform modules are successfully applied, your infrastructure (EKS cluster, networking, IAM roles, etc.) will be ready for service deployment.
+
+2. **Install Kubernetes Components (like NGINX Ingress)**:
+   - **After** your infrastructure is in place (EKS cluster), install the **NGINX Ingress Controller** and other Kubernetes components.
+   - This ensures that any service you expose through NGINX (like Grafana or ArgoCD) has the necessary infrastructure to run on.
+   
+   Example steps:
+   - Install the NGINX Ingress Controller in the Kubernetes cluster.
+   - Deploy **Cert-Manager** for managing SSL certificates (if using Let’s Encrypt).
+   - Set up Kubernetes Ingress resources for services like Grafana and ArgoCD.
+
+   This can be done using Helm or Kubernetes manifests, depending on your setup.
+
+3. **Deploy Applications**:
+   - With your infrastructure and NGINX Ingress in place, you can start deploying your applications (such as Grafana, ArgoCD, etc.) using Helm or Kubernetes YAML files.
+   - Ensure that these applications are correctly configured to use the NGINX Ingress for routing traffic.
+
+### Detailed Project Workflow:
+1. **Terraform Setup**:
+   - **VPC** (create subnets, route tables, NAT gateway).
+   - **EKS Cluster** (provision the cluster).
+   - **IAM Roles** (create roles for accessing different AWS services).
+   - **S3/DynamoDB** for state management.
+
+2. **Kubernetes Setup**:
+   - Install **NGINX Ingress** using Helm or manifests.
+   - Set up **Cert-Manager** for SSL certificates.
+
+3. **Deploy Applications**:
+   - **ArgoCD**: For continuous deployment.
+   - **Grafana**: For monitoring.
+   - Any other services you want to expose through NGINX.
+
+### Example Project Flow with Your Structure:
+- First, apply the Terraform modules in this order:
+  - `/terraform/modules/vpc/`
+  - `/terraform/modules/iam/`
+  - `/terraform/modules/eks/`
+  
+- After infrastructure is ready, install NGINX Ingress.
+  
+- Finally, deploy applications using the ingress configuration:
+  - `/terraform/modules/grafana/`
+  - `/terraform/modules/argocd/`
+
+### Key Point:
+**Infrastructure (Terraform) comes first**, and once it is ready, proceed with installing Kubernetes services (NGINX Ingress, Cert-Manager, etc.), and finally deploy your applications.
+
+
+
+
+fter EKS: Next Modules to Populate
+Once the EKS module is set up, you can work on other modules:
+
+ArgoCD Module:
+Dependencies: EKS (you need the Kubernetes cluster to deploy ArgoCD).
+This module should set up ArgoCD in the Kubernetes cluster created by the EKS module.
+
+Grafana Module:
+Dependencies: EKS and IAM (for Grafana's roles and permissions).
+You can deploy Grafana to monitor the Kubernetes cluster and set up CloudWatch integration.
+
+Ingress Module:
+Dependencies: EKS (as you'll need to deploy Ingress controllers in the cluster).
+This module will configure ingress for accessing ArgoCD, Grafana, and other services externally.
+After each module is populated, you'll need to make sure the corresponding variables and outputs are correctly defined in the dev environment files and properly referenced in main.tf.
+

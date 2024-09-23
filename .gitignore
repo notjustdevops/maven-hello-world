@@ -1,4 +1,19 @@
-# Backupfiles from mergetools #
+# path: .gitignore
+
+# Terraform files #
+.terraform
+*.tfstate
+*.tfstate.backup
+
+# Terragrunt files #
+*.terragrunt-cache
+
+# Python files #
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Backup files from merge tools #
 *.orig
 
 # Java Class Files #
