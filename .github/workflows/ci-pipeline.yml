@@ -88,22 +88,27 @@ jobs:
         with:
           name: dvorkin-guy-app-jar
           path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
-
-      # Step 9: Build and push Docker image
+    
+          
+        # Step 9: Build and push Docker image
       - name: Build and push Docker image
         run: |
           patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
+          
+          # Build the Docker image with no cache to ensure the latest content
           docker build --no-cache -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} Dvorkin-Guy-From-Kepler-186f-App
           
           # Tag the Docker image with the patch version and latest tag
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
           
-          # Push the Docker images to DockerHub
+          # Login to DockerHub using secrets
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          
+          # Push the Docker images to DockerHub
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
-      
+
       # Step 10: Delete old Docker images (keep last 5)
       - name: Delete old Docker images (keep last 5)
         run: |
