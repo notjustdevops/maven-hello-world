@@ -221,29 +221,6 @@ For an additional challenge, optimize your Docker image size by implementing a m
 
 
 
----
-
-
-2. **Multi-Stage Dockerfile** (Bonus - Optional)
-   - Use multistage builds for optimization:
-
-```dockerfile
-# path: Dockerfile
-# Build stage
-FROM maven:3.8.1-openjdk-11 as build
-WORKDIR /app
-COPY . .
-RUN mvn package -DskipTests
-
-# Run stage
-FROM openjdk:11-jre-slim
-WORKDIR /app
-COPY --from=build /app/target/maven-hello-world-*.jar app.jar
-USER nobody
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
----
 
 
 ---

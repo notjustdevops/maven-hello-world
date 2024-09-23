@@ -84,7 +84,7 @@ jobs:
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
       
-      - name: Delete old Docker images (keep last 10)
+      - name: Delete old Docker images (keep last 5)
         run: |
           token=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
           
@@ -92,7 +92,7 @@ jobs:
           images=$(curl -s -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/?page_size=100" | jq -r '.results|sort_by(.last_updated)|.[]|.name')
           
           image_count=$(echo "$images" | wc -l)
-          images_to_delete=$(($image_count - 10))
+          images_to_delete=$(($image_count - 5))
           
           if [ $images_to_delete -gt 0 ]; then
             echo "$images" | head -n $images_to_delete | while read tag; do
@@ -100,6 +100,6 @@ jobs:
               curl -s -X DELETE -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/$tag/"
             done
           else
-            echo "No images to delete, keeping the last 10."
+            echo "No images to delete, keeping the last 5."
           fi
 

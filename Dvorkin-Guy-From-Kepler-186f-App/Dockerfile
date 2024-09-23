@@ -23,5 +23,7 @@ COPY --from=build /app/target/dvorkin-guy-from-kepler-186f-app.jar app.jar
 # Switch to a non-root user
 USER nobody
 
+EXPOSE 8080
+
 # Run the application and add sleep for testing
 ENTRYPOINT ["sh", "-c", "java -jar app.jar && sleep 600"]

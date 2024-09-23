@@ -1,20 +1,14 @@
 package com.myapp;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
 import org.junit.Test;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-{
-    /**
-     * Rigorous Test :-)
-     */
+public class AppTest {
+
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    public void testGreeting() {
+        // Test if the getGreeting method returns the expected message
+        String expected = "Hello World, ...Auto Replaced in CI Job";
+        assertEquals(expected, App.getGreeting());
     }
 }
