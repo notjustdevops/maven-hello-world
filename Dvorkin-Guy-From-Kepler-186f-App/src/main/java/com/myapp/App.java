@@ -20,6 +20,6 @@ public class App {
 
     // Method that returns the greeting message with the updated version string
     public static String getGreeting() {
-        return "Hello World, this is Dvorkin Guy v1.0.3!";  // Increment the version here
-    }
+        return "Hello World, this is Dvorkin Guy v1.1.1!";
+    }    
 }
