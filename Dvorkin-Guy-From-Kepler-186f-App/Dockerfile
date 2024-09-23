@@ -1,3 +1,5 @@
+# path: Dvorkin-Guy-From-Kepler-186f-App/Dockerfile
+
 # First stage: Build the application
 FROM maven:3.8.5-openjdk-11-slim AS build
 
@@ -14,11 +16,9 @@ RUN mvn clean package -DskipTests
 # Second stage: Create a lightweight runtime container
 FROM openjdk:11-jre-slim
 
-# For debugging or monitoring
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+# For debugging or monitoring (add necessary utilities)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    ca-certificates \
     procps \
     net-tools \
     iputils-ping \

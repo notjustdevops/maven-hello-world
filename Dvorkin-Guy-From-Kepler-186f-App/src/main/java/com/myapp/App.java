@@ -18,7 +18,7 @@ public class App {
         System.out.println("Server is running on http://localhost:8080/");
     }
 
-    // Method that returns the greeting message with updated version string
+    // Method that returns the greeting message with the updated version string
     public static String getGreeting() {
         return "Hello World, this is Dvorkin Guy v1.0.3!";  // Increment the version here
     }

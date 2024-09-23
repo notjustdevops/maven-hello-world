@@ -27,22 +27,22 @@ jobs:
         with:
           java-version: '11'
 
-      # Step 3: Update the Hello World message with a new version string
+      # Step 3: Update the Hello World message with the version number
       - name: Update Hello World message
         run: |
-          sed -i 's/Hello World, this is Dvorkin Guy v1.0.[^!]*!/Hello World, this is Dvorkin Guy v1.0.3!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+          sed -i 's/Hello World, this is Dvorkin Guy v1.0.[^!]*!/Hello World, this is Dvorkin Guy from Not Just DevOps Species v1.0.3!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
 
       # Step 4: Verify App.java after replacement
       - name: Verify App.java after replacement
         run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
 
-      # Step 5: Set the JAR version to 1.0.0
+      # Step 5: Set the JAR version to 1.0.0 (Initial version if needed)
       - name: Set JAR version to 1.0.0
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
           mvn versions:set -DnewVersion=1.0.0
 
-      # Step 6: Increment the patch version
+      # Step 6: Increment patch version
       - name: Increment patch version
         id: patch_version
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
@@ -53,7 +53,7 @@ jobs:
           echo "::set-output name=PATCH_VERSION::$patch_version"
           echo "New version: $patch_version"
 
-      # Step 7: Log the current version
+      # Step 7: Log the current version to confirm
       - name: Log the current version
         run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
 
@@ -74,11 +74,7 @@ jobs:
           name: dvorkin-guy-app-jar
           path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
 
-      # Step 11: List target directory after the build
-      - name: List target directory after build
-        run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
-
-      # Step 12: Build and push Docker image
+      # Step 11: Build and push Docker image
       - name: Build and push Docker image
         run: |
           patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
@@ -93,12 +89,11 @@ jobs:
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
       
-      # Step 13: Clean up old Docker images, keeping the last 5
+      # Step 12: Clean up old Docker images, keeping the last 5
       - name: Delete old Docker images (keep last 5)
         run: |
           token=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
           
-          # Fetch all Docker tags and sort them by date
           images=$(curl -s -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/?page_size=100" | jq -r '.results|sort_by(.last_updated)|.[]|.name')
           
           image_count=$(echo "$images" | wc -l)
