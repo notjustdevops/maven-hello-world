@@ -27,18 +27,11 @@ jobs:
 
       - name: Update Hello World message
         run: |
-          sed -i 's/Hello World, this is Dvorkin Guy v1.0.2/Hello World, this is Dvorkin Guy v1.0.2/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-                 
+          sed -i 's/Hello World, this is Dvorkin Guy v1.0.2/Hello World, this is Dvorkin Guy v1.0.3/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+
       - name: Verify App.java after replacement
         run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
           
-      - name: Package the code
-        working-directory: Dvorkin-Guy-From-Kepler-186f-App
-        run: mvn package -DskipTests
-           
-      - name: Output App.java content
-        run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-        
       - name: Set JAR version to 1.0.0
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
@@ -53,6 +46,9 @@ jobs:
           mvn versions:set -DnewVersion=$patch_version
           echo "::set-output name=PATCH_VERSION::$patch_version"
           echo "New version: $patch_version"
+    
+      - name: Log the current version
+        run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
 
       - name: Compile the code
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
@@ -67,9 +63,6 @@ jobs:
         with:
           name: dvorkin-guy-app-jar
           path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
-        
-      - name: List target directory after build
-        run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
 
       - name: Build and push Docker image
         run: |
@@ -82,7 +75,7 @@ jobs:
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
-      
+
       - name: Delete old Docker images (keep last 5)
         run: |
           token=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
