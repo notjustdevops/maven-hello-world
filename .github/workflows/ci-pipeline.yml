@@ -17,26 +17,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Step 2: Set up Java Development Kit (JDK) 11
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: '11'
 
+      # Step 3: Update the Hello World message with a new version string
       - name: Update Hello World message
         run: |
-          sed -i 's/Hello World, this is Dvorkin Guy v1.0.2/Hello World, this is Dvorkin Guy v1.0.3/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+          sed -i 's/Hello World, this is Dvorkin Guy v1.0.[^!]*!/Hello World, this is Dvorkin Guy v1.0.3!/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
 
+      # Step 4: Verify App.java after replacement
       - name: Verify App.java after replacement
         run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-          
+
+      # Step 5: Set the JAR version to 1.0.0
       - name: Set JAR version to 1.0.0
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
           mvn versions:set -DnewVersion=1.0.0
 
+      # Step 6: Increment the patch version
       - name: Increment patch version
         id: patch_version
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
@@ -46,40 +52,53 @@ jobs:
           mvn versions:set -DnewVersion=$patch_version
           echo "::set-output name=PATCH_VERSION::$patch_version"
           echo "New version: $patch_version"
-    
+
+      # Step 7: Log the current version
       - name: Log the current version
         run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
 
+      # Step 8: Compile the code
       - name: Compile the code
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn compile
 
+      # Step 9: Package the code
       - name: Package the code
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn package -DskipTests
 
+      # Step 10: Upload the JAR artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: dvorkin-guy-app-jar
           path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
 
+      # Step 11: List target directory after the build
+      - name: List target directory after build
+        run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
+
+      # Step 12: Build and push Docker image
       - name: Build and push Docker image
         run: |
           patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
           docker build --no-cache -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} Dvorkin-Guy-From-Kepler-186f-App
           
+          # Tag the Docker image with the patch version and latest tag
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
           
+          # Push the Docker images to DockerHub
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
-
+      
+      # Step 13: Clean up old Docker images, keeping the last 5
       - name: Delete old Docker images (keep last 5)
         run: |
           token=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
           
+          # Fetch all Docker tags and sort them by date
           images=$(curl -s -H "Authorization: JWT $token" "https://hub.docker.com/v2/repositories/dvorkinguy/dvorkin-guy-from-kepler-186f-app/tags/?page_size=100" | jq -r '.results|sort_by(.last_updated)|.[]|.name')
           
           image_count=$(echo "$images" | wc -l)
