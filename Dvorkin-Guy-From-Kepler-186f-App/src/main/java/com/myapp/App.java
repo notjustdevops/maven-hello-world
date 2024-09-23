@@ -15,7 +15,7 @@ public class App {
         get("/info", (req, res) -> {
             res.type("application/json");
             // Create an info object with version and author data
-            Info info = new Info("0.0.10", "Dvorkin Guy", "Dvorkin-Guy-From-Kepler-186f-App");
+            Info info = new Info("0.0.11", "Dvorkin Guy", "Dvorkin-Guy-From-Kepler-186f-App");
             // Convert the object to JSON
             return new Gson().toJson(info);
         });
@@ -26,7 +26,7 @@ public class App {
 
     // Method that returns the greeting message with updated version string
     public static String getGreeting() {
-        return "Hello World, this is Dvorkin Guy v0.0.10!";
+        return "Hello World, this is Dvorkin Guy v0.0.11!";
     }
 }
 
