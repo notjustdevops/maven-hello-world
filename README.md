@@ -237,7 +237,7 @@ For an additional challenge, optimize your Docker image size by implementing a m
 
 ---
 
-# Step 6: Deploy with Helm
+## Step 6: Deploy with Helm
 
 1. **Create a basic Helm chart**:
    ```bash
