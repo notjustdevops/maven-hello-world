@@ -1,5 +1,3 @@
-// path: Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-
 package com.myapp;
 
 import static spark.Spark.*;

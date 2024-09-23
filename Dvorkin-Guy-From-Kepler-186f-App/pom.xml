@@ -7,7 +7,7 @@
     
     <groupId>com.myapp</groupId>
     <artifactId>Dvorkin-Guy-From-Kepler-186f-App</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>Dvorkin-Guy-From-Kepler-186f-App</name>
     <url>https://kepler-186f.notjustdevops.com</url>

@@ -17,60 +17,82 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Step 2: Set up Java Development Kit (JDK) 11
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: '11'
 
-      - name: Update Hello World message
-        run: |
-          sed -i 's/Hello World, this is Dvorkin Guy v[0-9\.]*/Hello World, this is Dvorkin Guy v${{ steps.patch_version.outputs.PATCH_VERSION }}/' Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-
-      - name: Verify App.java after replacement
-        run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
-          
+      # Step 3: Increment patch version
       - name: Increment patch version
         id: patch_version
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: |
-          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          patch_version=$(echo $current_version | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
-          mvn versions:set -DnewVersion=$patch_version
-          echo "::set-output name=PATCH_VERSION::$patch_version"
-          echo "New version: $patch_version"
+          # Extract the current version, removing any -SNAPSHOT suffix
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')
+          # Split the version into major, minor, and patch
+          IFS='.' read -r major minor patch <<< "$current_version"
+          # If patch is empty, set it to 0
+          if [ -z "$patch" ]; then
+            patch=0
+          fi
+          # Increment the patch version
+          patch=$((patch + 1))
+          # Construct the new version
+          new_version="$major.$minor.$patch"
+          # Set the new version in Maven
+          mvn versions:set -DnewVersion=$new_version
+          # Output the new version
+          echo "::set-output name=PATCH_VERSION::$new_version"
+          echo "New version: $new_version"
 
+      # Step 4: Update Hello World message with new version
+      - name: Update Hello World message
+        run: |
+          patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
+          sed -i "s/Hello World, this is Dvorkin Guy v[0-9\.]*\!/Hello World, this is Dvorkin Guy v$patch_version\!/" Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+
+      # Step 5: Verify App.java after replacement
+      - name: Verify App.java after replacement
+        run: cat Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+
+      # Step 6: Compile the code
       - name: Compile the code
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn compile
 
+      # Step 7: Package the code
       - name: Package the code
         working-directory: Dvorkin-Guy-From-Kepler-186f-App
         run: mvn package -DskipTests
 
+      # Step 8: Upload the JAR artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: dvorkin-guy-app-jar
           path: Dvorkin-Guy-From-Kepler-186f-App/target/*.jar
-        
-      - name: List target directory after build
-        run: ls -R Dvorkin-Guy-From-Kepler-186f-App/target
 
+      # Step 9: Build and push Docker image
       - name: Build and push Docker image
         run: |
           patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
           docker build --no-cache -t dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} Dvorkin-Guy-From-Kepler-186f-App
           
+          # Tag the Docker image with the patch version and latest tag
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker tag dvorkinguy/dvorkin-guy-from-kepler-186f-app:${{ github.sha }} dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
           
+          # Push the Docker images to DockerHub
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:$patch_version
           docker push dvorkinguy/dvorkin-guy-from-kepler-186f-app:latest
       
+      # Step 10: Delete old Docker images (keep last 5)
       - name: Delete old Docker images (keep last 5)
         run: |
           token=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.DOCKER_USERNAME }}", "password": "${{ secrets.DOCKER_PASSWORD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
