@@ -27,6 +27,8 @@ jobs:
         with:
           java-version: '11'
 
+
+
       # Step 3: Increment patch version
       - name: Increment patch version
         id: patch_version
@@ -34,28 +36,36 @@ jobs:
         run: |
           # Extract the current version, removing any -SNAPSHOT suffix
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')
+          
           # Split the version into major, minor, and patch
           IFS='.' read -r major minor patch <<< "$current_version"
+          
           # If patch is empty, set it to 0
           if [ -z "$patch" ]; then
             patch=0
           fi
+          
           # Increment the patch version
           patch=$((patch + 1))
+          
           # Construct the new version
           new_version="$major.$minor.$patch"
+          
           # Set the new version in Maven
           mvn versions:set -DnewVersion=$new_version
+          
           # Output the new version
           echo "::set-output name=PATCH_VERSION::$new_version"
           echo "New version: $new_version"
 
+
       # Step 4: Update Hello World message with new version
-      # Step 4: Update Hello World message with new version
-      - name: Update Hello World message
+
+      - name: Update Hello World message with new version
         run: |
-          patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
-          sed -i "s/Hello World, this is Dvorkin Guy v[0-9\.]*\!/Hello World, this is Dvorkin Guy on behalf of Not Just DevOps Species from Kepler-186f v$patch_version\!/" Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+            patch_version=${{ steps.patch_version.outputs.PATCH_VERSION }}
+            sed -i "s/Hello World, this is Dvorkin Guy v[0-9\.]*\!/Hello World, this is Dvorkin Guy on behalf of Not Just DevOps Species from Kepler-186f v$patch_version\!/" Dvorkin-Guy-From-Kepler-186f-App/src/main/java/com/myapp/App.java
+        
 
 
       # Step 5: Verify App.java after replacement
