@@ -224,69 +224,11 @@ For an additional challenge, optimize your Docker image size by implementing a m
 **Upon successful program execution, a beacon will be activated, and a rescue mission will be dispatched. Prepare for an imminent departure from your curious planet, Terran!**
 
 
-# Additional Implemethation.
+# Additional Implemethations.
 
   - Added Tests
   - Added 2 Images Upload. Latest and $Patch_Version
   - Keeping last 5 Images Only in DockerHub
+  - All variables set Dynamically
+  - Optimized the Docker image using multistage builds to minimize the final image size.
 
-
-
-
-
-
----
-
-# Step 6: Deploy with Helm
-
-1. **Create a basic Helm chart**:
-   ```bash
-   helm create maven-hello-world
-   ```
-2. **Modify the Helm chart** to include:
-   - Deployment
-   - Service
-   - Ingress (optional, for exposure)
-
-3. **Deploy the app to Kubernetes**:
-   ```bash
-   helm install hello-world ./maven-hello-world
-   ```
-
----
-
-## Step 7: Run Docker Image Locally
-
-Test the Docker image locally by running:
-```bash
-docker run -d -p 8080:8080 your_dockerhub_username/maven-hello-world:1.0.0
-```
-
-Visit `http://localhost:8080` to see your "Hello World" message.
-
----
-
-## Final Step: Signal Home
-
-Once all steps are complete and the app is deployed successfully, you have completed the mission!
-
-Good luck, fellow Keplerian!
-
----
-
-**Bonus:** Optimize the Docker image using multistage builds to minimize the final image size.
-```
-
-### Review of Answers:
-- **Forking and Analysis**: All steps are correct.
-- **Maven Overview**: Provided explanation about Maven, its workflow, and `pom.xml` is accurate.
-- **Code Changes and Versioning**: Instruction for modifying the `App.java` and setting the version to `1.0.0` in `pom.xml` are correct.
-- **GitHub Actions Workflow**: The provided pipeline configuration should work for automating the build, versioning, and Docker image creation.
-
-
-- **Dockerfile**: Both single-stage and multi-stage Dockerfiles are correctly structured and functional.
-- **Pushing Docker Image**: The steps to push the Docker image to Docker Hub are correct.
-- **Helm Deployment**: The basic Helm chart setup and deployment instructions are correct.
-- **Testing Locally**: Instructions for running the Docker image locally are correct and functional.
-
-This plan should allow you to complete the DevOps exercise quickly and with high quality as a "super DevOps engineer."
