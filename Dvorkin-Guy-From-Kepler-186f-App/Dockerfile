@@ -1,11 +1,27 @@
-# path: /home/notjust/Documents/devops/Projects/Rafael/maven-hello-world/Dvorkin-Guy-From-Kepler-186f-App/Dockerfile
+# First stage: Build the application
+FROM maven:3.8.5-openjdk-11 AS build
 
-FROM openjdk:11-jre-slim
-
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY target/dvorkin-guy-from-kepler-186f-app.jar app.jar
+# Copy the pom.xml and the source code
+COPY pom.xml .
+COPY src ./src
 
+# Build the application, creating a JAR file
+RUN mvn clean package -DskipTests
+
+# Second stage: Create a lightweight runtime container
+FROM openjdk:11-jre-slim
+
+# Set the working directory for the runtime
+WORKDIR /app
+
+# Copy the JAR file from the build stage
+COPY --from=build /app/target/dvorkin-guy-from-kepler-186f-app.jar app.jar
+
+# Switch to a non-root user
 USER nobody
 
+# Run the application and add sleep for testing
 ENTRYPOINT ["sh", "-c", "java -jar app.jar && sleep 600"]

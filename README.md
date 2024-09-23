@@ -191,10 +191,17 @@ To construct the program, we'll utilize your "GitHub Actions" continuous integra
 3.  **Docker Image Creation:**
     Construct a "Dockerfile" containing instructions for building a Docker image encapsulating the compiled artifact.
 
+        --> Completed.
+
 4.  **Docker Hub Integration:**
-    * Designate the Docker image with a tag that dynamically reflects the Jar version (e.g., "my-image:1.0.0").
+    * Designate the Docker image with a tag that dynamically reflects the Jar version (e.g., "my-image:1.0.0")
     * Configure the pipeline to push the created Docker image to your Docker Hub account.
+
+
     * **Security Consideration:** Ensure the Docker image doesn't execute code as the "root" user.
+
+        --> Completed.
+
 
 **Step 3: Deployment and Verification**
 
@@ -217,20 +224,6 @@ For an additional challenge, optimize your Docker image size by implementing a m
 ---
 
 
-
-## Step 4: Dockerize the Application
-
-1. **Create a `Dockerfile`**
-
-```dockerfile
-# path: Dockerfile
-FROM openjdk:11-jre-slim
-WORKDIR /app
-COPY target/maven-hello-world-*.jar app.jar
-USER nobody
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
 2. **Multi-Stage Dockerfile** (Bonus - Optional)
    - Use multistage builds for optimization:
 
@@ -252,16 +245,6 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ---
 
-## Step 5: Push Docker Image to Docker Hub
-
-1. **Login to Docker Hub via GitHub Secrets**
-   - Add `DOCKER_USERNAME` and `DOCKER_PASSWORD` as GitHub repository secrets.
-   
-2. **Tag the Docker Image Automatically**:
-```bash
-docker build -t your_dockerhub_username/maven-hello-world:1.0.0 .
-docker push your_dockerhub_username/maven-hello-world:1.0.0
-```
 
 ---
 
@@ -310,6 +293,8 @@ Good luck, fellow Keplerian!
 - **Maven Overview**: Provided explanation about Maven, its workflow, and `pom.xml` is accurate.
 - **Code Changes and Versioning**: Instruction for modifying the `App.java` and setting the version to `1.0.0` in `pom.xml` are correct.
 - **GitHub Actions Workflow**: The provided pipeline configuration should work for automating the build, versioning, and Docker image creation.
+
+
 - **Dockerfile**: Both single-stage and multi-stage Dockerfiles are correctly structured and functional.
 - **Pushing Docker Image**: The steps to push the Docker image to Docker Hub are correct.
 - **Helm Deployment**: The basic Helm chart setup and deployment instructions are correct.
