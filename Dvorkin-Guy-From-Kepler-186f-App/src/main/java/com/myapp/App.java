@@ -26,7 +26,7 @@ public class App {
 
     // Method that returns the greeting message with updated version string
     public static String getGreeting() {
-        return "Hello World, this is Dvorkin Guy v0.0.8!";
+        return "Hello World, this is Dvorkin Guy v0.0.9!";
     }
 }
 
