@@ -284,4 +284,4 @@ The Helm chart is stored in a dedicated GitHub repository or a Helm Chart reposi
 
 5. **Monitoring**: Integrate monitoring tools such as Prometheus and Grafana into your cluster, using Helm charts for their installations.
 
-6. **Test**: Deploy your app via ArgoCD and verify that all subdomains are accessible and correctly routed.
+6. **Test**: Deploy your app via ArgoCD and verify that all subdomains are accessible and correctly routed. 
