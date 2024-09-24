@@ -1,21 +1,10 @@
-# path: /maven-hello-world/terraform/modules/ingress/main.tf
-
-
-provider "kubernetes" {
-  host                   = var.eks_cluster_endpoint
-  cluster_ca_certificate = base64decode(var.eks_cluster_ca)
-  token                  = data.aws_eks_cluster_auth.eks_auth.token
-}
-
-
-data "aws_eks_cluster_auth" "eks_auth" {
-  name = var.eks_cluster_name
-}
-
 resource "kubernetes_ingress" "cluster_ingress" {
   metadata {
     name      = "cluster-wide-ingress"
     namespace = var.argocd_namespace
+    annotations = {
+      "kubernetes.io/ingress.class" = "nginx"  # Adjust based on your ingress controller
+    }
   }
 
   spec {
@@ -25,7 +14,7 @@ resource "kubernetes_ingress" "cluster_ingress" {
       http {
         path {
           path     = "/"
-          #path_type = "Prefix"  # Supported in newer Kubernetes versions
+          #path_type = "Prefix"
           backend {
             service_name = "argocd-server"
             service_port = 80
@@ -54,7 +43,4 @@ resource "kubernetes_ingress" "cluster_ingress" {
       hosts       = ["argocd.${var.ingress_domain}", "grafana.${var.ingress_domain}"]
     }
   }
-
-  depends_on = [module.eks]
 }
-
