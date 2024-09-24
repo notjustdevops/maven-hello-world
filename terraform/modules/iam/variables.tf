@@ -1,3 +1,5 @@
+# /home/notjust/Documents/devops/Projects/Rafael/maven-hello-world/terraform/modules/iam/variables.tf
+
 variable "aws_region" {
   description = "AWS region"
   type        = string
@@ -34,7 +36,23 @@ variable "iam_role_name" {
 }
 
 
+variable "eks_cluster_name" {
+  description = "The name of the EKS cluster"
+  type        = string
+}
+variable "eks_cluster_version" {
+  description = "The version of the EKS cluster"
+  type        = string
+}
 
+variable "eks_cluster_endpoint_private_access" {
+  description = "Indicates whether or not the EKS private API server endpoint is enabled"
+  type        = bool
+}
 
+variable "create_worker_role" {
+  description = "Boolean flag to determine if a worker IAM role should be created"
+  type        = bool
+}
 
 

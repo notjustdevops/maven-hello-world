@@ -141,3 +141,27 @@ variable "subdomain_argocd" {
   description = "The subdomain for ArgoCD"
   type        = string
 }
+
+# /maven-hello-world/terraform/environments/dev/variables.tf
+
+variable "eks_cluster_endpoint_private_access" {
+  description = "Boolean flag to enable private access to the EKS cluster endpoint"
+  type        = bool
+}
+
+variable "create_worker_role" {
+  description = "Boolean flag to determine if a worker IAM role should be created"
+  type        = bool
+}
+
+# path: /maven-hello-world/terraform/modules/ingress/variables.tf
+
+variable "eks_cluster_endpoint" {
+  description = "The endpoint of the EKS cluster"
+  type        = string
+}
+
+variable "eks_cluster_ca" {
+  description = "The EKS cluster certificate authority data"
+  type        = string
+}

@@ -568,9 +568,6 @@ When building a project that involves infrastructure as code (Terraform) and dep
 
 
 
-fter EKS: Next Modules to Populate
-Once the EKS module is set up, you can work on other modules:
-
 ArgoCD Module:
 Dependencies: EKS (you need the Kubernetes cluster to deploy ArgoCD).
 This module should set up ArgoCD in the Kubernetes cluster created by the EKS module.
@@ -584,3 +581,48 @@ Dependencies: EKS (as you'll need to deploy Ingress controllers in the cluster).
 This module will configure ingress for accessing ArgoCD, Grafana, and other services externally.
 After each module is populated, you'll need to make sure the corresponding variables and outputs are correctly defined in the dev environment files and properly referenced in main.tf.
 
+Great! Your Terraform apply was successful, and the EKS cluster along with the associated resources have been provisioned. Here are some key outputs to take note of:
+
+### Key Outputs:
+- **EKS Cluster Name**: `dvorkinguy-kepler-app-eks-cluster`
+- **EKS Cluster Endpoint**: `https://E199E405F1537DC4CF809FE365EB6AA9.gr7.us-west-2.eks.amazonaws.com`
+- **EKS Cluster Version**: `1.24`
+- **Node Group**: 
+  - **ARN**: `arn:aws:eks:us-west-2:864492617736:nodegroup/dvorkinguy-kepler-app-eks-cluster/dvorkinguy-kepler-app-node-group/58c91065-af63-79e3-b17b-c25d3f7a7280`
+  - **Instance Type**: `t3.medium`
+  - **Status**: `ACTIVE`
+- **VPC ID**: `vpc-0d33a7d81a9bea75d`
+- **Public Subnets**: 
+  - `subnet-0a09bc79d829eb7ca`
+  - `subnet-083872dea3670ead5`
+- **Private Subnets**: 
+  - `subnet-059f30186aff9269e`
+  - `subnet-0a420701bd8ce6aa6`
+- **Ingress Domain**: `kepler.notjustdevops.com`
+- **Grafana Namespace**: `monitoring`
+  
+### Next Steps:
+1. **Configure Kubectl**: 
+   Now that your EKS cluster is up and running, you should configure your `kubectl` to access the cluster. You can run the following command:
+   ```bash
+   aws eks --region us-west-2 update-kubeconfig --name dvorkinguy-kepler-app-eks-cluster
+   ```
+
+2. **Deploy Applications**: 
+   You can now start deploying applications to your EKS cluster using Kubernetes manifests or Helm charts.
+
+3. **Ingress Configuration**: 
+   If you plan to expose services via the domain `kepler.notjustdevops.com`, you need to configure the ingress resources.
+
+4. **Monitor Cluster**: 
+   Make sure to set up monitoring, such as Prometheus or Grafana, which you have set in the `monitoring` namespace.
+
+If you encounter any issues or need further assistance configuring your applications, feel free to reach out!
+
+
+
+
+LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJME1Ea3lNekl3TXpjeU5Wb1hEVE0wTURreU1USXdNemN5TlZvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBS0R3CjY3L09CQ0wyd05KZEc2QjdHZktiMGtXTE9DUFFUZUtuMTlsdWZ0NnlERFNnNGRPUElBUmZoNXE2NmtYUlR5eW4KRVRGSENzLzU3bVZQR3BJMUpBaGZKRU9kT1dZRlg2cHEyQjlRY2tUSVI2NFUxN2lKeVE3VEhhSmtSbFJmcmhmMAozbXcrVWtxRWQzZUNISHFlamduS1R2RGZaZTFxMmdiQnl3QllNcHQwSFdJdXhhdkl3NFBuTzRSenVXaG1rSVdyClFmK3MrM1hWditFelgvdDRBN3RjSlhlWHpjVm9FMWxoV1N6RVVxcTBpSGdnWmJlRTVxbVlQV2dzMlpNRmFYUnMKRG5Ea3B6enRPWnNRdWw3WnVONjZwNkZWTkkyUGFVc2VKNVFhbkZGVEI1RmtiMDB2YVJSU0tzVnVYT2YvYWUrVwo3aEJVaDlSRTZTekJKMnNyOUNzQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZJYjZEcVV4c01GWGhoRlk1Q0JxV2twQ2c3V1JNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQWprS0ZwdlpVTyt0UTZpSU9VSApKMFowb2k4NkhzbkJKTjNJWG96aXdOcDE5b3pvRlNaRTF3LzZYTC82MU5HaVlVQjd4NVJUSVQ1VHFySW5rVW8xCldaZFlJRC9tNUR4OEFBRHFKeU5YTUtCUUJrK3gxbjBuaXp5amJSWnRmc3JFRzYvUVlhTGlYVFg3a2ZvYlZGamEKQ08rRXc4VDV3cWxBU3hObFFqLzdXVDdaTU1MNnU5NE5tTStZUkV5c3ZwMEN4ZEQxYXh3Y3lnU0NjZ01lY0pUaQp2RWMwWVpSYzNETW81OFFPQk56U1lNN2FrZ1V1N3ZPZnBNbzBRQ09YWmpJQUlvVXhlOFk0ckxEbXpSeFlnOHJ0Cnl1MEFQMzVWOEt2TjJ0WGpMd0I2cEltdHBpYW43VlY4YUE5R1hna0c1Z05EeDRTS2VXQjQ2U0syRXNZY3VObm8KNHNFPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+
+
+https://E199E405F1537DC4CF809FE365EB6AA9.gr7.us-west-2.eks.amazonaws.com

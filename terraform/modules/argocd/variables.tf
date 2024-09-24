@@ -1,29 +1,35 @@
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-}
+# path: /maven-hello-world/terraform/modules/argocd/variables.tf
 
 variable "argocd_namespace" {
-  description = "Namespace for ArgoCD"
+  description = "The namespace to deploy ArgoCD"
+  type        = string
+  default     = "argocd"
+}
+
+variable "chart_version" {
+  description = "Version of the ArgoCD Helm chart"
+  type        = string
+  default     = "5.19.5"  # Specify the version you wish to use
+}
+
+variable "ingress_domain" {
+  description = "The domain for ingress to expose ArgoCD"
   type        = string
 }
 
-variable "argocd_chart_version" {
-  description = "Helm chart version for ArgoCD"
+# path: /maven-hello-world/terraform/modules/argocd/variables.tf
+
+variable "eks_cluster_endpoint" {
+  description = "The endpoint for the EKS cluster"
   type        = string
 }
 
-variable "tags" {
-  description = "Tags to be applied to all resources"
-  type        = map(string)
-}
-
-variable "subdomain_argocd" {
-  description = "The subdomain for accessing ArgoCD"
+variable "eks_cluster_ca" {
+  description = "The certificate authority for the EKS cluster"
   type        = string
 }
 
-variable "argocd_admin_password" {
-  description = "The admin password for ArgoCD"
+variable "eks_cluster_name" {
+  description = "The name of the EKS cluster"
   type        = string
 }

@@ -1,3 +1,5 @@
+# /home/notjust/Documents/devops/Projects/Rafael/maven-hello-world/terraform/modules/iam/main.tf
+
 provider "aws" {
   region = var.aws_region
 }
@@ -171,9 +173,21 @@ data "aws_iam_policy_document" "eks_assume_role" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
-      identifiers = ["eks.amazonaws.com"]
+      identifiers = ["eks.amazonaws.com", "ec2.amazonaws.com"]  # Ensure EC2 is included
     }
   }
 }
 
 
+#resource "aws_iam_role" "eks_worker_role" {
+#  name               = "${var.resource_prefix}-eks-worker-role"
+#  assume_role_policy = data.aws_iam_policy_document.eks_assume_role.json
+#
+#  tags = merge(
+#    var.tags,
+#    {
+#      Name = "${var.resource_prefix}-eks-worker-role"
+#    }
+#  )
+#}
+#

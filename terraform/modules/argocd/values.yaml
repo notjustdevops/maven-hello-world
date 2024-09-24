@@ -1,0 +1,15 @@
+# path: /maven-hello-world/terraform/modules/argocd/values.yaml
+
+server:
+  ingress:
+    enabled: true
+    hosts:
+      - "argocd.${var.ingress_domain}"
+    tls:
+      - secretName: argocd-tls
+        hosts:
+          - "argocd.${var.ingress_domain}"
+
+controller:
+  extraArgs:
+    - --insecure
